@@ -26,8 +26,6 @@ void print(C container, P predicate) {
         }
         std::cout << std::endl;
     }
-    std::cout << std::endl;
-    std::cout << std::endl;
 }
 
 
