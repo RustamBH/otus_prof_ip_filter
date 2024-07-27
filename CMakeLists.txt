@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(02.homework)
+project(02.ip_filter)
 
 add_executable(
 	IP_filter
