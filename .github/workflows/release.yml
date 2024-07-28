@@ -12,7 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          submodules: true      
+          submodules: true 
+      - run: sudo apt-get update
       - run: cmake . -DPATCH_VERSION=${{ github.run_number }}
       - run: cmake --build .
       - run: cmake --build . --target all
