@@ -6,6 +6,7 @@
 #include <fstream>
 #include <algorithm>
 #include <iterator>
+#include <array>
 
 
 template<typename C, typename P>
@@ -14,9 +15,9 @@ void print(C container, P predicate) {
     std::vector<element_type> ip_pool_filter;
 
     std::copy_if(container.begin(), container.end(),  std::back_inserter(ip_pool_filter), predicate);
-    for(std::vector<std::vector<std::string>>::const_iterator ip = ip_pool_filter.cbegin(); ip != ip_pool_filter.cend(); ++ip)
+    for(std::vector<std::array<size_t, 4>>::const_iterator ip = ip_pool_filter.cbegin(); ip != ip_pool_filter.cend(); ++ip)
     {
-        for(std::vector<std::string>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
+        for(std::array<size_t, 4>::const_iterator ip_part = ip->cbegin(); ip_part != ip->cend(); ++ip_part)
         {
             if (ip_part != ip->cbegin())
             {
@@ -63,46 +64,27 @@ int main(int argc, char const *argv[])
 
         for(std::string line; std::getline(file, line);)
         {
-            std::vector<std::string> v = split(line, '\t');
-            ip_pool.push_back(split(v.at(0), '.'));
+            std::string s_addr = line.substr(0, line.find('\t'));
+            std::vector<std::string> v = split(s_addr, '.');
+            std::array<size_t, 4> addr = {std::stoi(v.at(0)), std::stoi(v.at(1)), std::stoi(v.at(2)), std::stoi(v.at(3))};            
+            ip_pool.push_back(addr);
         }
 
         // TODO reverse lexicographically sort
-        struct
-        {
-            bool operator()(const std::vector<std::string>& octetsA, const std::vector<std::string>& octetsB){
-                // Condition if the IP Address is same then return false
-                if (octetsA == octetsB) {
-                    return false;
-                }
-
-                // Compare the octets and return the result
-                for (int i = 0; i < 4; i++) {
-                    if (stoi(octetsA[i]) > stoi(octetsB[i])) {
-                        return true;
-                    } else if (stoi(octetsA[i]) < stoi(octetsB[i])) {
-                        return false;
-                    }
-                }
-            }
-        }
-        customGreat;
-
-        std::sort(ip_pool.begin(), ip_pool.end(), customGreat);
-        auto all_ip = [](const std::vector<std::string>& octetsA) { return true; };
+        std::sort(ip_pool.begin(), ip_pool.end(), std::greater<>());        
+        auto all_ip = [](const std::array<size_t, 4>& octetsA) { return true; };
         print(ip_pool, all_ip);
 
-        // ip = filter(1),  1.*.*.*
-        std::vector<std::vector<std::string>> ip_pool_filter_1;
-        auto starts_from_1 = [](const std::vector<std::string>& octetsA) { return stoi(octetsA[0]) == 1; };
+        // ip = filter(1),  1.*.*.*       
+        auto starts_from_1 = [](const std::array<size_t, 4>& octetsA) { return octetsA[0] == 1; };
         print(ip_pool, starts_from_1);
 
-        // ip = filter(46, 70), 46.70.*.*
-        auto starts_from_4670 = [](const std::vector<std::string>& octetsA) { return stoi(octetsA[0]) == 46 && stoi(octetsA[1]) == 70; };
+        // ip = filter(46, 70), 46.70.*.*        
+        auto starts_from_4670 = [](const std::array<size_t, 4>& octetsA) { return octetsA[0] == 46 && octetsA[1] == 70; };
         print(ip_pool, starts_from_4670);
 
-        // ip = filter_any(46), 46.*.*.* || *.46.*.* || *.*.46.* || *.*.*.46
-        auto has_any_46 = [](const std::vector<std::string>& octetsA) { return stoi(octetsA[0]) == 46 || stoi(octetsA[1]) == 46 || stoi(octetsA[2]) == 46 || stoi(octetsA[3]) == 46; };
+        // ip = filter_any(46), 46.*.*.* || *.46.*.* || *.*.46.* || *.*.*.46        
+        auto has_any_46 = [](const std::array<size_t, 4>& octetsA) { return octetsA[0] == 46 || octetsA[1] == 46 || octetsA[2] == 46 || octetsA[3] == 46; };
         print(ip_pool, has_any_46);
     }
     catch(const std::exception &e)
