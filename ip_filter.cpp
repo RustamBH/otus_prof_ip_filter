@@ -58,8 +58,8 @@ std::vector<std::string> split(const std::string &str, char d)
 int main(int argc, char const *argv[])
 {
     try
-    {
-        std::vector<std::vector<std::string>> ip_pool;
+    {        
+        std::vector<std::array<size_t, 4>> ip_pool;
         std::ifstream file("ip_filter.tsv");
 
         for(std::string line; std::getline(file, line);)
