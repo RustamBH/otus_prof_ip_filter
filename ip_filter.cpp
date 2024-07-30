@@ -61,6 +61,7 @@ int main(int argc, char const *argv[])
     {        
         std::vector<std::array<size_t, 4>> ip_pool;
         std::ifstream file("ip_filter.tsv");
+        ip_pool.reserve(1000);
 
         for(std::string line; std::getline(file, line);)
         {
